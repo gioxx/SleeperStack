@@ -66,10 +66,25 @@ python3 main.py
 
 ---
 
+## 📦 Docker Image Availability
+
+SleeperStack is available on:
+
+- **Docker Hub**: [`gfsolone/sleeperstack`](https://hub.docker.com/r/gfsolone/sleeperstack)
+- **GitHub Container Registry**: [`ghcr.io/gioxx/sleeperstack`](https://github.com/gioxx/SleeperStack/pkgs/container/sleeperstack)
+
+You can pull it with:
+
+```bash
+docker pull ghcr.io/gioxx/sleeperstack:latest
+```
+
+---
+
 ### 🐳 Docker run example
 
 ```bash
-docker run --rm --env-file .env gioxx/sleeperstack
+docker run --rm --env-file .env gfsolone/sleeperstack
 ```
 
 ---
@@ -133,20 +148,6 @@ Set different `TARGET_LABEL` and `ACTION` values to automate multiple groups.
 
 ---
 
-## 📄 License
-
-MIT — free to use, modify and distribute.
-
----
-
-## 🤝 Contributions
-
-Pull requests welcome!  
-SleeperStack is built for responsible automation in all environments, including Community users.
-
-
----
-
 ## 🕓 Example crontab schedules
 
 You can automate SleeperStack with multiple cronjobs to control different groups of containers based on their labels.
@@ -154,31 +155,28 @@ You can automate SleeperStack with multiple cronjobs to control different groups
 ### 🔌 Turn off test containers at night (22:00)
 
 ```
-0 22 * * * docker run --rm -e PORTAINER_URL=... -e PORTAINER_API_KEY=... -e ENDPOINT_ID=2 -e TARGET_LABEL=autoshutdown=night -e ACTION=stop gioxx/sleeperstack
+0 22 * * * docker run --rm -e PORTAINER_URL=... -e PORTAINER_API_KEY=... -e PORTAINER_ENDPOINT_ID=2 -e TARGET_LABEL=autoshutdown=night -e ACTION=stop gfsolone/sleeperstack
 ```
 
 ### 🌅 Turn them back on in the morning (07:00)
 
 ```
-0 7 * * * docker run --rm -e PORTAINER_URL=... -e PORTAINER_API_KEY=... -e ENDPOINT_ID=2 -e TARGET_LABEL=autoshutdown=night -e ACTION=start gioxx/sleeperstack
+0 7 * * * docker run --rm -e PORTAINER_URL=... -e PORTAINER_API_KEY=... -e PORTAINER_ENDPOINT_ID=2 -e TARGET_LABEL=autoshutdown=night -e ACTION=start gfsolone/sleeperstack
 ```
 
 ### 🧪 Stop weekend-only environments (Friday 19:00)
 
 ```
-0 19 * * 5 docker run --rm -e PORTAINER_URL=... -e PORTAINER_API_KEY=... -e ENDPOINT_ID=2 -e TARGET_LABEL=autoshutdown=weekend -e ACTION=stop gioxx/sleeperstack
+0 19 * * 5 docker run --rm -e PORTAINER_URL=... -e PORTAINER_API_KEY=... -e PORTAINER_ENDPOINT_ID=2 -e TARGET_LABEL=autoshutdown=weekend -e ACTION=stop gfsolone/sleeperstack
 ```
 
 ### 🗓️ Restart them on Monday morning (08:30)
 
 ```
-30 8 * * 1 docker run --rm -e PORTAINER_URL=... -e PORTAINER_API_KEY=... -e ENDPOINT_ID=2 -e TARGET_LABEL=autoshutdown=weekend -e ACTION=start gioxx/sleeperstack
+30 8 * * 1 docker run --rm -e PORTAINER_URL=... -e PORTAINER_API_KEY=... -e PORTAINER_ENDPOINT_ID=2 -e TARGET_LABEL=autoshutdown=weekend -e ACTION=start gfsolone/sleeperstack
 ```
 
 📌 Tip: You can extract shared env vars into a `.env` file and reuse with `--env-file`.
-
----
-
 
 ---
 
@@ -191,7 +189,7 @@ You can use `docker-compose` to schedule SleeperStack with different labels and 
 ```yaml
 services:
   sleeperstack-night:
-    image: gioxx/sleeperstack
+    image: gfsolone/sleeperstack
     restart: "no"
     environment:
       PORTAINER_URL: http://dockerlab.local:9002/api
@@ -214,7 +212,7 @@ docker-compose run --rm sleeperstack-night
 ```yaml
 services:
   sleeperstack-nightly:
-    image: gioxx/sleeperstack
+    image: gfsolone/sleeperstack
     environment:
       PORTAINER_URL: http://dockerlab.local:9002/api
       PORTAINER_API_KEY: your_api_key
@@ -235,3 +233,13 @@ services:
 
 ---
 
+## 📄 License
+
+MIT — free to use, modify and distribute.
+
+---
+
+## 🤝 Contributions
+
+Pull requests welcome!  
+SleeperStack is built for responsible automation in all environments, including Community users.
