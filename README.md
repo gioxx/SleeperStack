@@ -3,6 +3,13 @@
 **SleeperStack** is a lightweight automation container that safely starts or stops Docker containers managed via Portainer, using labels.  
 It's designed to work especially well with **Portainer Community Edition**, offering full functionality even without access to advanced stack metadata.
 
+[![](https://img.shields.io/github/issues/gioxx/SleeperStack.svg)](https://github.com/gioxx/SleeperStack/issues)
+[![](https://img.shields.io/github/issues-pr-raw/gioxx/SleeperStack.svg)](https://github.com/gioxx/SleeperStack/pulls)
+[![MIT License](https://img.shields.io/github/license/gioxx/SleeperStack)](https://github.com/gioxx/SleeperStack/blob/main/LICENSE)
+[![](https://img.shields.io/badge/GHCR-available-blue?logo=docker)](https://github.com/users/gioxx/packages/container/package/SleeperStack)
+[![](https://img.shields.io/docker/pulls/gfsolone/sleeperstack.svg)](https://hub.docker.com/r/gfsolone/sleeperstack)
+[![](https://img.shields.io/docker/image-size/gfsolone/sleeperstack/latest.svg)](https://hub.docker.com/r/gfsolone/sleeperstack)
+
 ---
 
 ## ✨ Features
