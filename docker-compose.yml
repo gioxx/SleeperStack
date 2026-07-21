@@ -1,0 +1,16 @@
+services:
+  sleeperstack:
+    image: gfsolone/sleeperstack:latest
+    container_name: sleeperstack
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - sleeperstack-data:/data
+    environment:
+      SECRET_KEY: ${SECRET_KEY:?set a long random string, e.g. openssl rand -hex 32}
+      ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?set the initial admin password}
+
+volumes:
+  sleeperstack-data:

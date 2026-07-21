@@ -248,9 +248,42 @@ You can automate SleeperStack with multiple cronjobs to control different groups
 
 ## 🐳 Docker Compose example
 
-You can use `docker-compose` to schedule SleeperStack with different labels and time-based logic using cron syntax inside the container or with external tools like [docker-cron](https://hub.docker.com/r/aptible/docker-cron).
+### 🖥️ Server mode (recommended)
 
-### 🧠 Basic example (manual run)
+A ready-to-use `docker-compose.yml` is included in the repo:
+
+```yaml
+services:
+  sleeperstack:
+    image: gfsolone/sleeperstack:latest
+    container_name: sleeperstack
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - sleeperstack-data:/data
+    environment:
+      SECRET_KEY: ${SECRET_KEY:?set a long random string, e.g. openssl rand -hex 32}
+      ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?set the initial admin password}
+
+volumes:
+  sleeperstack-data:
+```
+
+Create a `.env` file next to it with `SECRET_KEY`, `ADMIN_USERNAME` and
+`ADMIN_PASSWORD`, then:
+
+```bash
+docker compose up -d
+```
+
+The scheduler, all Portainer endpoints and every rule live inside this one
+long-running container — no separate cron sidecar needed anymore.
+
+---
+
+### 🧠 One-shot mode (legacy, manual or external cron)
 
 ```yaml
 services:
@@ -258,6 +291,7 @@ services:
     image: gfsolone/sleeperstack
     restart: "no"
     environment:
+      MODE: oneshot
       PORTAINER_URL: http://dockerlab.local:9002/api
       PORTAINER_API_KEY: your_api_key
       PORTAINER_ENDPOINT_ID: "2"
@@ -268,18 +302,17 @@ services:
 Run it manually:
 
 ```bash
-docker-compose run --rm sleeperstack-night
+docker compose run --rm sleeperstack-night
 ```
 
----
-
-### ⏱️ With docker-cron
+### ⏱️ One-shot mode with docker-cron
 
 ```yaml
 services:
   sleeperstack-nightly:
     image: gfsolone/sleeperstack
     environment:
+      MODE: oneshot
       PORTAINER_URL: http://dockerlab.local:9002/api
       PORTAINER_API_KEY: your_api_key
       PORTAINER_ENDPOINT_ID: "2"
@@ -292,10 +325,10 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
       CRON_TIME: "0 22 * * *"
-      CRON_COMMAND: "docker-compose run --rm sleeperstack-nightly"
+      CRON_COMMAND: "docker compose run --rm sleeperstack-nightly"
 ```
 
-📌 Note: docker-cron triggers commands in its environment, so keep `docker.sock` mounted and `docker-compose` installed if required.
+📌 Note: docker-cron triggers commands in its environment, so keep `docker.sock` mounted and `docker compose` installed if required. This whole setup (a second container just to trigger cron) is what the built-in scheduler in server mode replaces.
 
 ---
 
