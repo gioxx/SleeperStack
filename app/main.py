@@ -5,7 +5,8 @@ from fastapi.responses import RedirectResponse
 
 import app.db as db
 from app.auth import NotAuthenticated, bootstrap_admin
-from app.routers import auth_router, dashboard_router
+from app.routers import auth_router, dashboard_router, endpoints_router
+from app.scheduler import SchedulerService
 
 
 @asynccontextmanager
@@ -16,12 +17,19 @@ async def lifespan(app: FastAPI):
         bootstrap_admin(session)
     finally:
         session.close()
-    yield
+
+    app.state.scheduler = SchedulerService(db.SessionLocal)
+    app.state.scheduler.start()
+    try:
+        yield
+    finally:
+        app.state.scheduler.shutdown()
 
 
 app = FastAPI(lifespan=lifespan)
 app.include_router(auth_router.router)
 app.include_router(dashboard_router.router)
+app.include_router(endpoints_router.router)
 
 
 @app.exception_handler(NotAuthenticated)
