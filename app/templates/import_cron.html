@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Import from crontab - SleeperStack{% endblock %}
+{% block content %}
+<h1>Import rules from crontab</h1>
+<p>Paste your existing crontab lines that invoke <code>docker run ... gfsolone/sleeperstack</code>.</p>
+
+<form method="post" action="/rules/import/preview">
+  <textarea name="crontab_text" rows="8" cols="80" placeholder="0 22 * * * docker run --rm -e PORTAINER_URL=... -e ACTION=stop ...">{{ crontab_text or "" }}</textarea><br>
+  <button type="submit">Preview</button>
+</form>
+
+{% if preview is not none %}
+<h2>Preview</h2>
+<table>
+  <tr><th>Cron line</th><th>Cron</th><th>Action</th><th>Label</th><th>Endpoint match</th></tr>
+  {% for row in preview %}
+  <tr>
+    <td><code>{{ row.parsed.raw_line }}</code></td>
+    <td>{{ row.parsed.cron_expression or "" }}</td>
+    <td>{{ row.parsed.action or "" }}</td>
+    <td>{{ row.parsed.target_label or "" }}</td>
+    <td>
+      {% if row.parsed.is_valid and row.endpoint %}
+        {{ row.endpoint.name }}
+      {% else %}
+        <span class="error">{{ row.parsed.error }}</span>
+      {% endif %}
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+
+{% set valid_rows = preview | selectattr("parsed.is_valid") | selectattr("endpoint") | list %}
+{% if valid_rows %}
+<form method="post" action="/rules/import/confirm">
+  {% for row in valid_rows %}
+  <input type="hidden" name="cron_expression" value="{{ row.parsed.cron_expression }}">
+  <input type="hidden" name="action" value="{{ row.parsed.action }}">
+  <input type="hidden" name="target_label" value="{{ row.parsed.target_label }}">
+  <input type="hidden" name="endpoint_db_id" value="{{ row.endpoint.id }}">
+  {% endfor %}
+  <button type="submit">Confirm import of {{ valid_rows | length }} rule(s)</button>
+</form>
+{% endif %}
+{% endif %}
+{% endblock %}

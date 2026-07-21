@@ -10,6 +10,7 @@ from app.routers import (
     dashboard_router,
     endpoints_router,
     history_router,
+    import_cron_router,
     inventory_router,
     rules_router,
 )
@@ -40,6 +41,7 @@ app.include_router(endpoints_router.router)
 app.include_router(rules_router.router)
 app.include_router(history_router.router)
 app.include_router(inventory_router.router)
+app.include_router(import_cron_router.router)
 
 
 @app.exception_handler(NotAuthenticated)
