@@ -1,30 +1,34 @@
 {% extends "base.html" %}
 {% block title %}Dashboard - SleeperStack{% endblock %}
 {% block content %}
-<h1>Dashboard</h1>
-<p>Logged in as {{ user.username }}.</p>
+<hgroup>
+  <h1>Dashboard</h1>
+  <p>Logged in as {{ user.username }}.</p>
+</hgroup>
 
 {% for view in endpoint_views %}
-<h2>{{ view.endpoint.name }}</h2>
-{% if view.error %}
-<p class="error">Connection error: {{ view.error }}</p>
-{% else %}
-<table>
-  <tr><th>Container</th><th>Label</th><th>State</th><th></th></tr>
-  {% for container in view.containers %}
-  <tr>
-    <td>{{ container.name }}</td>
-    <td>{{ container.label_value }}</td>
-    <td class="badge-{{ container.state }}">{{ container.state }}</td>
-    <td>
-      <form class="inline" method="post" action="/dashboard/{{ view.endpoint.id }}/containers/{{ container.id }}/stop"><button type="submit">Stop</button></form>
-      <form class="inline" method="post" action="/dashboard/{{ view.endpoint.id }}/containers/{{ container.id }}/start"><button type="submit">Start</button></form>
-    </td>
-  </tr>
+<article>
+  <header><strong>{{ view.endpoint.name }}</strong></header>
+  {% if view.error %}
+  <p style="color: var(--pico-del-color);">Connection error: {{ view.error }}</p>
   {% else %}
-  <tr><td colspan="4">No labeled containers found.</td></tr>
-  {% endfor %}
-</table>
-{% endif %}
+  <table>
+    <tr><th>Container</th><th>Label</th><th>State</th><th></th></tr>
+    {% for container in view.containers %}
+    <tr>
+      <td>{{ container.name }}</td>
+      <td>{{ container.label_value }}</td>
+      <td class="badge-{{ container.state }}">{{ container.state }}</td>
+      <td>
+        <form class="inline" method="post" action="/dashboard/{{ view.endpoint.id }}/containers/{{ container.id }}/stop"><button type="submit" class="outline">Stop</button></form>
+        <form class="inline" method="post" action="/dashboard/{{ view.endpoint.id }}/containers/{{ container.id }}/start"><button type="submit" class="outline secondary">Start</button></form>
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="4">No labeled containers found.</td></tr>
+    {% endfor %}
+  </table>
+  {% endif %}
+</article>
 {% endfor %}
 {% endblock %}

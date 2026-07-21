@@ -2,18 +2,20 @@
 {% block title %}History - SleeperStack{% endblock %}
 {% block content %}
 <h1>Run history</h1>
-<table>
-  <tr><th>Started</th><th>Rule</th><th>Status</th><th>Dry run</th><th>Detail</th></tr>
-  {% for entry in entries %}
-  <tr>
-    <td>{{ entry.started_at }}</td>
-    <td>{{ entry.rule_id if entry.rule_id is not none else "manual" }}</td>
-    <td>{{ entry.status }}</td>
-    <td>{{ "yes" if entry.dry_run else "no" }}</td>
-    <td>{{ entry.detail_json or "" }}</td>
-  </tr>
-  {% else %}
-  <tr><td colspan="5">No runs yet.</td></tr>
-  {% endfor %}
-</table>
+<article>
+  <table>
+    <tr><th>Started</th><th>Rule</th><th>Status</th><th>Dry run</th><th>Detail</th></tr>
+    {% for entry in entries %}
+    <tr>
+      <td>{{ entry.started_at }}</td>
+      <td>{{ entry.rule_id if entry.rule_id is not none else "manual" }}</td>
+      <td>{{ entry.status }}</td>
+      <td>{{ "yes" if entry.dry_run else "no" }}</td>
+      <td><code>{{ entry.detail_json or "" }}</code></td>
+    </tr>
+    {% else %}
+    <tr><td colspan="5">No runs yet.</td></tr>
+    {% endfor %}
+  </table>
+</article>
 {% endblock %}

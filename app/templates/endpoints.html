@@ -4,27 +4,33 @@
 <h1>Portainer endpoints</h1>
 {% if error %}<p>{{ error }}</p>{% endif %}
 
-<table>
-  <tr><th>Name</th><th>Portainer URL</th><th>Endpoint ID</th><th></th></tr>
-  {% for endpoint in endpoints %}
-  <tr>
-    <td>{{ endpoint.name }}</td>
-    <td>{{ endpoint.portainer_url }}</td>
-    <td>{{ endpoint.endpoint_id }}</td>
-    <td>
-      <form class="inline" method="post" action="/endpoints/{{ endpoint.id }}/test"><button type="submit">Test</button></form>
-      <form class="inline" method="post" action="/endpoints/{{ endpoint.id }}/delete"><button type="submit">Delete</button></form>
-    </td>
-  </tr>
-  {% endfor %}
-</table>
+<article>
+  <table>
+    <tr><th>Name</th><th>Portainer URL</th><th>Endpoint ID</th><th></th></tr>
+    {% for endpoint in endpoints %}
+    <tr>
+      <td>{{ endpoint.name }}</td>
+      <td>{{ endpoint.portainer_url }}</td>
+      <td>{{ endpoint.endpoint_id }}</td>
+      <td>
+        <form class="inline" method="post" action="/endpoints/{{ endpoint.id }}/test"><button type="submit" class="outline">Test</button></form>
+        <form class="inline" method="post" action="/endpoints/{{ endpoint.id }}/delete"><button type="submit" class="outline contrast">Delete</button></form>
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="4">No endpoints configured yet.</td></tr>
+    {% endfor %}
+  </table>
+</article>
 
-<h2>Add endpoint</h2>
-<form method="post" action="/endpoints">
-  <label>Name <input type="text" name="name" required></label><br>
-  <label>Portainer URL <input type="text" name="portainer_url" placeholder="http://portainer.local:9000/api" required></label><br>
-  <label>API key <input type="password" name="api_key" required></label><br>
-  <label>Endpoint ID <input type="text" name="endpoint_id" required></label><br>
-  <button type="submit">Add</button>
-</form>
+<article>
+  <header><strong>Add endpoint</strong></header>
+  <form method="post" action="/endpoints">
+    <label>Name <input type="text" name="name" required></label>
+    <label>Portainer URL <input type="text" name="portainer_url" placeholder="http://portainer.local:9000/api" required></label>
+    <label>API key <input type="password" name="api_key" required></label>
+    <label>Endpoint ID <input type="text" name="endpoint_id" required></label>
+    <button type="submit">Add</button>
+  </form>
+</article>
 {% endblock %}

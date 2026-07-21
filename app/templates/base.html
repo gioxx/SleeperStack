@@ -2,30 +2,41 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}SleeperStack{% endblock %}</title>
-  <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+  <link rel="stylesheet" href="/static/vendor/pico.min.css">
+  <script src="/static/vendor/htmx.min.js"></script>
   <style>
-    body { font-family: system-ui, sans-serif; max-width: 960px; margin: 2rem auto; padding: 0 1rem; color: #1a1a1a; }
-    nav a { margin-right: 1rem; }
-    table { border-collapse: collapse; width: 100%; margin-top: 1rem; }
-    th, td { text-align: left; padding: 0.4rem 0.6rem; border-bottom: 1px solid #ddd; }
-    .error { color: #b00020; }
-    .badge-running { color: #0a7a2f; }
-    .badge-exited { color: #999; }
-    form.inline { display: inline; }
+    form.inline { display: inline-block; margin: 0 0.25rem 0 0; }
+    td.badge-running { color: var(--pico-ins-color); font-weight: 600; }
+    td.badge-exited { color: var(--pico-muted-color); }
+    code { word-break: break-all; }
   </style>
 </head>
 <body>
   {% if user %}
-  <nav>
-    <a href="/dashboard">Dashboard</a>
-    <a href="/rules">Rules</a>
-    <a href="/endpoints">Endpoints</a>
-    <a href="/history">History</a>
-    <a href="/inventory">Inventory</a>
-    <form class="inline" method="post" action="/logout"><button type="submit">Logout</button></form>
-  </nav>
+  <header class="container">
+    <nav>
+      <ul>
+        <li><strong>💤 SleeperStack</strong></li>
+      </ul>
+      <ul>
+        <li><a href="/dashboard">Dashboard</a></li>
+        <li><a href="/rules">Rules</a></li>
+        <li><a href="/endpoints">Endpoints</a></li>
+        <li><a href="/history">History</a></li>
+        <li><a href="/inventory">Inventory</a></li>
+        <li>
+          <form class="inline" method="post" action="/logout">
+            <button type="submit" class="outline secondary">Logout</button>
+          </form>
+        </li>
+      </ul>
+    </nav>
+  </header>
   {% endif %}
-  {% block content %}{% endblock %}
+  <main class="container">
+    {% block content %}{% endblock %}
+  </main>
 </body>
 </html>

@@ -4,31 +4,35 @@
 <h1>Container inventory</h1>
 
 {% for view in endpoint_views %}
-<h2>{{ view.endpoint.name }}</h2>
-{% if view.error %}
-<p class="error">Connection error: {{ view.error }}</p>
-{% else %}
-<table>
-  <tr>
-    <th>Container</th><th>Stack</th><th>Image</th><th>State</th>
-    <th>Status</th><th>Ports</th><th>IP</th><th>Created</th><th>autoshutdown</th>
-  </tr>
-  {% for container in view.containers %}
-  <tr>
-    <td>{{ container.name }}</td>
-    <td>{{ container.stack or "" }}</td>
-    <td>{{ container.image }}</td>
-    <td class="badge-{{ container.state }}">{{ container.state }}</td>
-    <td>{{ container.status }}</td>
-    <td>{{ container.ports }}</td>
-    <td>{{ container.ip or "" }}</td>
-    <td>{{ container.created or "" }}</td>
-    <td>{{ container.autoshutdown or "" }}</td>
-  </tr>
+<article>
+  <header><strong>{{ view.endpoint.name }}</strong></header>
+  {% if view.error %}
+  <p style="color: var(--pico-del-color);">Connection error: {{ view.error }}</p>
   {% else %}
-  <tr><td colspan="9">No containers found.</td></tr>
-  {% endfor %}
-</table>
-{% endif %}
+  <div style="overflow-x: auto;">
+  <table>
+    <tr>
+      <th>Container</th><th>Stack</th><th>Image</th><th>State</th>
+      <th>Status</th><th>Ports</th><th>IP</th><th>Created</th><th>autoshutdown</th>
+    </tr>
+    {% for container in view.containers %}
+    <tr>
+      <td>{{ container.name }}</td>
+      <td>{{ container.stack or "" }}</td>
+      <td>{{ container.image }}</td>
+      <td class="badge-{{ container.state }}">{{ container.state }}</td>
+      <td>{{ container.status }}</td>
+      <td>{{ container.ports }}</td>
+      <td>{{ container.ip or "" }}</td>
+      <td>{{ container.created or "" }}</td>
+      <td>{{ container.autoshutdown or "" }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="9">No containers found.</td></tr>
+    {% endfor %}
+  </table>
+  </div>
+  {% endif %}
+</article>
 {% endfor %}
 {% endblock %}

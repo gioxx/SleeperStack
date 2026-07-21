@@ -2,42 +2,48 @@
 {% block title %}Rules - SleeperStack{% endblock %}
 {% block content %}
 <h1>Schedule rules</h1>
-{% if error %}<p class="error">{{ error }}</p>{% endif %}
+{% if error %}<p style="color: var(--pico-del-color);">{{ error }}</p>{% endif %}
 
-<table>
-  <tr><th>Endpoint</th><th>Label</th><th>Action</th><th>Cron</th><th>Enabled</th><th></th></tr>
-  {% for rule in rules %}
-  <tr>
-    <td>{{ rule.endpoint.name }}</td>
-    <td>{{ rule.target_label }}</td>
-    <td>{{ rule.action }}</td>
-    <td>{{ rule.cron_expression }}</td>
-    <td>{{ "yes" if rule.enabled else "no" }}</td>
-    <td>
-      <form class="inline" method="post" action="/rules/{{ rule.id }}/toggle"><button type="submit">{{ "Disable" if rule.enabled else "Enable" }}</button></form>
-      <form class="inline" method="post" action="/rules/{{ rule.id }}/delete"><button type="submit">Delete</button></form>
-    </td>
-  </tr>
-  {% endfor %}
-</table>
+<article>
+  <table>
+    <tr><th>Endpoint</th><th>Label</th><th>Action</th><th>Cron</th><th>Enabled</th><th></th></tr>
+    {% for rule in rules %}
+    <tr>
+      <td>{{ rule.endpoint.name }}</td>
+      <td>{{ rule.target_label }}</td>
+      <td>{{ rule.action }}</td>
+      <td>{{ rule.cron_expression }}</td>
+      <td>{{ "yes" if rule.enabled else "no" }}</td>
+      <td>
+        <form class="inline" method="post" action="/rules/{{ rule.id }}/toggle"><button type="submit" class="outline secondary">{{ "Disable" if rule.enabled else "Enable" }}</button></form>
+        <form class="inline" method="post" action="/rules/{{ rule.id }}/delete"><button type="submit" class="outline contrast">Delete</button></form>
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="6">No rules yet.</td></tr>
+    {% endfor %}
+  </table>
+</article>
 
-<h2>Add rule</h2>
-<form method="post" action="/rules">
-  <label>Endpoint
-    <select name="endpoint_id" required>
-      {% for endpoint in endpoints %}
-      <option value="{{ endpoint.id }}">{{ endpoint.name }}</option>
-      {% endfor %}
-    </select>
-  </label><br>
-  <label>Target label <input type="text" name="target_label" placeholder="autoshutdown=night" required></label><br>
-  <label>Action
-    <select name="action" required>
-      <option value="stop">stop</option>
-      <option value="start">start</option>
-    </select>
-  </label><br>
-  <label>Cron expression <input type="text" name="cron_expression" placeholder="0 22 * * *" required></label><br>
-  <button type="submit">Add</button>
-</form>
+<article>
+  <header><strong>Add rule</strong></header>
+  <form method="post" action="/rules">
+    <label>Endpoint
+      <select name="endpoint_id" required>
+        {% for endpoint in endpoints %}
+        <option value="{{ endpoint.id }}">{{ endpoint.name }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>Target label <input type="text" name="target_label" placeholder="autoshutdown=night" required></label>
+    <label>Action
+      <select name="action" required>
+        <option value="stop">stop</option>
+        <option value="start">start</option>
+      </select>
+    </label>
+    <label>Cron expression <input type="text" name="cron_expression" placeholder="0 22 * * *" required></label>
+    <button type="submit">Add</button>
+  </form>
+</article>
 {% endblock %}
