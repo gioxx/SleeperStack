@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>{% block title %}SleeperStack{% endblock %}</title>
+  <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 960px; margin: 2rem auto; padding: 0 1rem; color: #1a1a1a; }
+    nav a { margin-right: 1rem; }
+    table { border-collapse: collapse; width: 100%; margin-top: 1rem; }
+    th, td { text-align: left; padding: 0.4rem 0.6rem; border-bottom: 1px solid #ddd; }
+    .error { color: #b00020; }
+    .badge-running { color: #0a7a2f; }
+    .badge-exited { color: #999; }
+    form.inline { display: inline; }
+  </style>
+</head>
+<body>
+  {% if user %}
+  <nav>
+    <a href="/dashboard">Dashboard</a>
+    <a href="/rules">Rules</a>
+    <a href="/endpoints">Endpoints</a>
+    <a href="/history">History</a>
+    <a href="/inventory">Inventory</a>
+    <form class="inline" method="post" action="/logout"><button type="submit">Logout</button></form>
+  </nav>
+  {% endif %}
+  {% block content %}{% endblock %}
+</body>
+</html>
