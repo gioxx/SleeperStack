@@ -19,9 +19,63 @@ It's designed to work especially well with **Portainer Community Edition**, offe
 - ✅ Works with containers deployed via Docker Compose stacks
 - ✅ Supports **multiple label values** for grouping (e.g. `night`, `weekend`)
 - ✅ Reads container state: avoids redundant stop/start
-- ✅ Optional `--dry-run` mode to simulate actions
+- ✅ Optional dry-run mode to simulate actions
 - ✅ Designed for safe automation: non-destructive and reversible
-- ✅ Easily integrates with cron, Portainer Scheduled Jobs, or CI
+- ✅ **WebUI with internal scheduler** (default mode): manage multiple Portainer
+  endpoints, schedule rules, trigger manual stop/start, browse run history and a
+  full container inventory — no external cron required
+- ✅ Legacy **one-shot CLI mode** still available for existing cron-based setups
+- ✅ Import existing crontab lines straight into scheduled rules
+
+---
+
+## 🖥️ WebUI (server mode, default)
+
+Starting the container without `MODE=oneshot` launches a small web application
+(FastAPI) on port `8000`, backed by an internal scheduler (APScheduler) and a
+SQLite database persisted in `/data`. A single instance manages **all** your
+Portainer environments — no need to run one container per endpoint anymore.
+
+| Page | Purpose |
+|------|---------|
+| `/login` | Sign in (single admin account, bootstrapped from env vars on first boot) |
+| `/dashboard` | Live status of labeled containers per endpoint, manual stop/start |
+| `/rules` | Create/enable/disable/delete scheduled rules (label + action + cron) |
+| `/rules/import` | Paste your existing crontab lines and import them as rules |
+| `/endpoints` | Manage Portainer connections (URL, API key, endpoint ID), test connectivity |
+| `/history` | Log of every scheduled and manual run, with status and dry-run flag |
+| `/inventory` | Full container census per endpoint — stack, image, ports, IP, uptime, labels |
+
+### Required environment variables (server mode)
+
+| Variable | Description |
+|----------|-------------|
+| `SECRET_KEY` | Long random string used to sign sessions and encrypt stored Portainer API keys |
+| `ADMIN_USERNAME` | Username for the first admin account (default `admin`) |
+| `ADMIN_PASSWORD` | Password for the first admin account, required only on first boot |
+| `SLEEPERSTACK_DB_PATH` | (Optional) SQLite file path, default `/data/sleeperstack.db` |
+
+```bash
+docker run -d --name sleeperstack \
+  -p 8000:8000 \
+  -v sleeperstack-data:/data \
+  -e SECRET_KEY=$(openssl rand -hex 32) \
+  -e ADMIN_USERNAME=admin \
+  -e ADMIN_PASSWORD=change_me \
+  gfsolone/sleeperstack
+```
+
+Then open `http://localhost:8000`, log in, add your Portainer endpoint(s) and
+create rules — or use `/rules/import` to migrate the crontab lines you already
+have (see below).
+
+### Migrating from external cron
+
+Paste your existing lines (the same ones you used with `docker run` +
+host/Portainer cron) into `/rules/import`. SleeperStack parses the cron
+schedule, label, action and endpoint from each line, matches it against a
+configured endpoint, and lets you review before creating the equivalent rule
+— nothing is imported silently.
 
 ---
 
@@ -39,7 +93,12 @@ This makes it safe and accessible for all setups — even without Portainer Busi
 
 ---
 
-## 🚀 Usage
+## 🚀 One-shot mode (legacy)
+
+Set `MODE=oneshot` to keep using SleeperStack exactly like before: a single
+run that stops/starts containers for one label on one Portainer endpoint,
+then exits. Useful if you already have external cron jobs and don't want to
+migrate yet.
 
 ### 🔧 Required Environment Variables
 
@@ -88,10 +147,10 @@ docker pull ghcr.io/gioxx/sleeperstack:latest
 
 ---
 
-### 🐳 Docker run example
+### 🐳 Docker run example (one-shot)
 
 ```bash
-docker run --rm --env-file .env gfsolone/sleeperstack
+docker run --rm --env-file .env -e MODE=oneshot gfsolone/sleeperstack
 ```
 
 ---
@@ -162,25 +221,25 @@ You can automate SleeperStack with multiple cronjobs to control different groups
 ### 🔌 Turn off test containers at night (22:00)
 
 ```
-0 22 * * * docker run --rm -e PORTAINER_URL=... -e PORTAINER_API_KEY=... -e PORTAINER_ENDPOINT_ID=2 -e TARGET_LABEL=autoshutdown=night -e ACTION=stop gfsolone/sleeperstack
+0 22 * * * docker run --rm -e MODE=oneshot -e PORTAINER_URL=... -e PORTAINER_API_KEY=... -e PORTAINER_ENDPOINT_ID=2 -e TARGET_LABEL=autoshutdown=night -e ACTION=stop gfsolone/sleeperstack
 ```
 
 ### 🌅 Turn them back on in the morning (07:00)
 
 ```
-0 7 * * * docker run --rm -e PORTAINER_URL=... -e PORTAINER_API_KEY=... -e PORTAINER_ENDPOINT_ID=2 -e TARGET_LABEL=autoshutdown=night -e ACTION=start gfsolone/sleeperstack
+0 7 * * * docker run --rm -e MODE=oneshot -e PORTAINER_URL=... -e PORTAINER_API_KEY=... -e PORTAINER_ENDPOINT_ID=2 -e TARGET_LABEL=autoshutdown=night -e ACTION=start gfsolone/sleeperstack
 ```
 
 ### 🧪 Stop weekend-only environments (Friday 19:00)
 
 ```
-0 19 * * 5 docker run --rm -e PORTAINER_URL=... -e PORTAINER_API_KEY=... -e PORTAINER_ENDPOINT_ID=2 -e TARGET_LABEL=autoshutdown=weekend -e ACTION=stop gfsolone/sleeperstack
+0 19 * * 5 docker run --rm -e MODE=oneshot -e PORTAINER_URL=... -e PORTAINER_API_KEY=... -e PORTAINER_ENDPOINT_ID=2 -e TARGET_LABEL=autoshutdown=weekend -e ACTION=stop gfsolone/sleeperstack
 ```
 
 ### 🗓️ Restart them on Monday morning (08:30)
 
 ```
-30 8 * * 1 docker run --rm -e PORTAINER_URL=... -e PORTAINER_API_KEY=... -e PORTAINER_ENDPOINT_ID=2 -e TARGET_LABEL=autoshutdown=weekend -e ACTION=start gfsolone/sleeperstack
+30 8 * * 1 docker run --rm -e MODE=oneshot -e PORTAINER_URL=... -e PORTAINER_API_KEY=... -e PORTAINER_ENDPOINT_ID=2 -e TARGET_LABEL=autoshutdown=weekend -e ACTION=start gfsolone/sleeperstack
 ```
 
 📌 Tip: You can extract shared env vars into a `.env` file and reuse with `--env-file`.
