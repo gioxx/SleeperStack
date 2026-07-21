@@ -5,7 +5,13 @@ from fastapi.responses import RedirectResponse
 
 import app.db as db
 from app.auth import NotAuthenticated, bootstrap_admin
-from app.routers import auth_router, dashboard_router, endpoints_router, rules_router
+from app.routers import (
+    auth_router,
+    dashboard_router,
+    endpoints_router,
+    history_router,
+    rules_router,
+)
 from app.scheduler import SchedulerService
 
 
@@ -31,6 +37,7 @@ app.include_router(auth_router.router)
 app.include_router(dashboard_router.router)
 app.include_router(endpoints_router.router)
 app.include_router(rules_router.router)
+app.include_router(history_router.router)
 
 
 @app.exception_handler(NotAuthenticated)
